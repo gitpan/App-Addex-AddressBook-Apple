@@ -13,13 +13,13 @@ App::Addex::AddressBook::Apple - use Apple Address Book as the addex source
 
 =head1 VERSION
 
-version 0.003
+version 0.004
 
-  $Id: /my/cs/projects/App-Addex-AddressBook-Apple/trunk/lib/App/Addex/AddressBook/Apple.pm 31541 2007-05-07T15:42:45.637965Z rjbs  $
+  $Id: /my/cs/projects/App-Addex-AddressBook-Apple/trunk/lib/App/Addex/AddressBook/Apple.pm 31584 2007-05-10T19:06:36.962826Z rjbs  $
 
 =cut
 
-our $VERSION = '0.003';
+our $VERSION = '0.004';
 
 =head1 SYNOPSIS
 
@@ -50,8 +50,23 @@ sub _entrify {
     ($fields{sig})    = $note =~ /^sig:\s*(\S+)$/sm;
   }
 
+  my $name;
+
+  if (my $fname = $self->_demsng($person->prop('first name')->get)) {
+    my $mname  = $self->_demsng($person->prop('middle name')->get) || '';
+    my $lname  = $self->_demsng($person->prop('last name')->get)   || '';
+    my $suffix = $self->_demsng($person->prop('suffix')->get)      || '';
+
+    $name = $fname
+          . (length $mname  ? " $mname"  : '')
+          . (length $lname  ? " $lname"  : '')
+          . (length $suffix ? " $suffix" : '');
+  } else {
+    $name  = $self->_demsng($person->prop('name')->get);
+  }
+
   return App::Addex::Entry->new({
-    name   => scalar $self->_demsng($person->prop('name')->get),
+    name   => $name,
     nick   => scalar $self->_demsng($person->prop('nickname')->get),
     emails => \@emails,
     fields => \%fields,
