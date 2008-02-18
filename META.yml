@@ -15,4 +15,4 @@ no_index:
 requires: 
   App::Addex: 0.007
   Mac::Glue: 0
-version: 0.006
+version: 0.007
