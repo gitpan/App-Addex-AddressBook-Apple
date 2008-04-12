@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+use 5.008;
 use strict;
 use warnings;
 
@@ -6,6 +6,7 @@ package App::Addex::AddressBook::Apple;
 use base qw(App::Addex::AddressBook);
 
 use App::Addex::Entry::EmailAddress;
+use Encode ();
 
 use Mac::Glue qw(:glue);
 
@@ -15,11 +16,11 @@ App::Addex::AddressBook::Apple - use Apple Address Book as the addex source
 
 =head1 VERSION
 
-version 0.008
+version 0.009
 
 =cut
 
-our $VERSION = '0.008';
+our $VERSION = '0.009';
 
 =head1 SYNOPSIS
 
@@ -36,6 +37,20 @@ sub _glue {
 sub _demsng {
   return if ! $_[1] or $_[1] eq 'msng';
   return $_[1];
+}
+
+sub _fix_str {
+  my ($self, $str) = @_;
+
+  return '' unless defined $str;
+  return $str if Encode::is_utf8($str);
+  return Encode::decode(MacRoman => $str);
+}
+
+sub _fix_prop {
+  my ($self, $prop) = @_;
+  my $str = $self->_demsng($prop->get);
+  return $self->_fix_str($str);
 }
 
 sub _entrify {
@@ -58,16 +73,17 @@ sub _entrify {
   my $name;
 
   if (my $fname = $self->_demsng($person->prop('first name')->get)) {
-    my $mname  = $self->_demsng($person->prop('middle name')->get) || '';
-    my $lname  = $self->_demsng($person->prop('last name')->get)   || '';
-    my $suffix = $self->_demsng($person->prop('suffix')->get)      || '';
+       $fname  = $self->_fix_str($fname);
+    my $mname  = $self->_fix_prop($person->prop('middle name'));
+    my $lname  = $self->_fix_prop($person->prop('last name'));
+    my $suffix = $self->_fix_prop($person->prop('suffix'));
 
     $name = $fname
           . (length $mname  ? " $mname"  : '')
           . (length $lname  ? " $lname"  : '')
           . (length $suffix ? " $suffix" : '');
   } else {
-    $name  = $self->_demsng($person->prop('name')->get);
+    $name  = $self->_fix_prop($person->prop('name'));
   }
 
   CHECK_DEFAULT: {
@@ -117,7 +133,7 @@ notified of progress on your bug as I make changes.
 
 =head1 COPYRIGHT
 
-Copyright 2006-2007 Ricardo Signes, all rights reserved.
+Copyright 2006-2007 Ricardo Signes.
 
 This program is free software; you may redistribute it and/or modify it
 under the same terms as Perl itself.
