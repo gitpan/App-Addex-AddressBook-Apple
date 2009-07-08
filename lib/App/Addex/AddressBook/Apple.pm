@@ -16,17 +16,25 @@ App::Addex::AddressBook::Apple - use Apple Address Book as the addex source
 
 =head1 VERSION
 
-version 0.015
+version 0.016
 
 =cut
 
-our $VERSION = '0.015';
+our $VERSION = '0.016';
 
 =head1 SYNOPSIS
 
 This module implements the L<App::Addex::AddressBook> interface for Mac OS X's
 Address Book application, using L<Mac::Glue> to get entries from the address
 book.
+
+You may need to set up glue for Address Book before this will work.  You can do
+this using F<gluemac> from L<Mac::Glue>
+
+    gluemac /Applications/Address\ Book.app
+
+You will probably need to run this program with F<sudo>; just prepend C<sudo>
+to the command above.
 
 =cut
 
