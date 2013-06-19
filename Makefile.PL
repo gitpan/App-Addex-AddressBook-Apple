@@ -1,14 +1,75 @@
-use inc::Module::Install;
 
-all_from      ('lib/App/Addex/AddressBook/Apple.pm');
+use strict;
+use warnings;
 
-requires('App::Addex' => 0.007); # the EmailAddress class
-requires('Encode'     => 0.000); # minimum unknown
-requires('Mac::Glue'  => 0.000); # minimum unknown
+use 5.008;
 
-extra_tests;
+use ExtUtils::MakeMaker 6.30;
 
-repository('http://github.com/rjbs/app-addex-addressbook-apple');
-auto_manifest;
 
-WriteAll();
+
+my %WriteMakefileArgs = (
+  "ABSTRACT" => "use Apple Address Book as the addex source",
+  "AUTHOR" => "Ricardo SIGNES <rjbs\@cpan.org>",
+  "BUILD_REQUIRES" => {},
+  "CONFIGURE_REQUIRES" => {
+    "ExtUtils::MakeMaker" => "6.30"
+  },
+  "DISTNAME" => "App-Addex-AddressBook-Apple",
+  "EXE_FILES" => [],
+  "LICENSE" => "perl",
+  "NAME" => "App::Addex::AddressBook::Apple",
+  "PREREQ_PM" => {
+    "App::Addex::AddressBook" => 0,
+    "App::Addex::Entry::EmailAddress" => 0,
+    "Encode" => 0,
+    "Mac::Glue" => 0,
+    "base" => 0,
+    "strict" => 0,
+    "warnings" => 0
+  },
+  "TEST_REQUIRES" => {
+    "File::Find" => 0,
+    "File::Temp" => 0,
+    "Test::More" => "0.96"
+  },
+  "VERSION" => "0.017",
+  "test" => {
+    "TESTS" => "t/*.t"
+  }
+);
+
+
+unless ( eval { ExtUtils::MakeMaker->VERSION(6.63_03) } ) {
+  my $tr = delete $WriteMakefileArgs{TEST_REQUIRES};
+  my $br = $WriteMakefileArgs{BUILD_REQUIRES};
+  for my $mod ( keys %$tr ) {
+    if ( exists $br->{$mod} ) {
+      $br->{$mod} = $tr->{$mod} if $tr->{$mod} > $br->{$mod};
+    }
+    else {
+      $br->{$mod} = $tr->{$mod};
+    }
+  }
+}
+
+unless ( eval { ExtUtils::MakeMaker->VERSION(6.56) } ) {
+  my $br = delete $WriteMakefileArgs{BUILD_REQUIRES};
+  my $pp = $WriteMakefileArgs{PREREQ_PM};
+  for my $mod ( keys %$br ) {
+    if ( exists $pp->{$mod} ) {
+      $pp->{$mod} = $br->{$mod} if $br->{$mod} > $pp->{$mod};
+    }
+    else {
+      $pp->{$mod} = $br->{$mod};
+    }
+  }
+}
+
+delete $WriteMakefileArgs{CONFIGURE_REQUIRES}
+  unless eval { ExtUtils::MakeMaker->VERSION(6.52) };
+
+WriteMakefile(%WriteMakefileArgs);
+
+
+

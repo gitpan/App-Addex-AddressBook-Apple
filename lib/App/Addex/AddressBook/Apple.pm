@@ -3,40 +3,17 @@ use strict;
 use warnings;
 
 package App::Addex::AddressBook::Apple;
+{
+  $App::Addex::AddressBook::Apple::VERSION = '0.017';
+}
 use base qw(App::Addex::AddressBook);
+# ABSTRACT: use Apple Address Book as the addex source
 
 use App::Addex::Entry::EmailAddress;
 use Encode ();
 
 use Mac::Glue qw(:glue);
 
-=head1 NAME
-
-App::Addex::AddressBook::Apple - use Apple Address Book as the addex source
-
-=head1 VERSION
-
-version 0.016
-
-=cut
-
-our $VERSION = '0.016';
-
-=head1 SYNOPSIS
-
-This module implements the L<App::Addex::AddressBook> interface for Mac OS X's
-Address Book application, using L<Mac::Glue> to get entries from the address
-book.
-
-You may need to set up glue for Address Book before this will work.  You can do
-this using F<gluemac> from L<Mac::Glue>
-
-    gluemac /Applications/Address\ Book.app
-
-You will probably need to run this program with F<sudo>; just prepend C<sudo>
-to the command above.
-
-=cut
 
 sub _glue {
   return $_[0]->{_abook_glue} ||= Mac::Glue->new("Address_Book");
@@ -129,23 +106,47 @@ sub entries {
   my @entries = map { $self->_entrify($_) } $self->_glue->prop("people")->get;
 }
 
+1;
+
+__END__
+
+=pod
+
+=head1 NAME
+
+App::Addex::AddressBook::Apple - use Apple Address Book as the addex source
+
+=head1 VERSION
+
+version 0.017
+
+=head1 SYNOPSIS
+
+B<Achtung!>  Using this requires L<Mac::Glue>.  Mac::Glue is not going to work
+on more recent OS X.  Instead, check out
+L<App::Addex::AddressBook::AppleScript>.
+
+This module implements the L<App::Addex::AddressBook> interface for Mac OS X's
+Address Book application, using L<Mac::Glue> to get entries from the address
+book.
+
+You may need to set up glue for Address Book before this will work.  You can do
+this using F<gluemac> from L<Mac::Glue>
+
+    gluemac /Applications/Address\ Book.app
+
+You will probably need to run this program with F<sudo>; just prepend C<sudo>
+to the command above.
+
 =head1 AUTHOR
 
-Ricardo SIGNES, C<< <rjbs@cpan.org> >>
+Ricardo SIGNES <rjbs@cpan.org>
 
-=head1 BUGS
+=head1 COPYRIGHT AND LICENSE
 
-Please report any bugs or feature requests through the web interface at
-L<http://rt.cpan.org>.  I will be notified, and then you'll automatically be
-notified of progress on your bug as I make changes.
+This software is copyright (c) 2006 by Ricardo SIGNES.
 
-=head1 COPYRIGHT
-
-Copyright 2006-2007 Ricardo Signes.
-
-This program is free software; you may redistribute it and/or modify it
-under the same terms as Perl itself.
+This is free software; you can redistribute it and/or modify it under
+the same terms as the Perl 5 programming language system itself.
 
 =cut
-
-1;
