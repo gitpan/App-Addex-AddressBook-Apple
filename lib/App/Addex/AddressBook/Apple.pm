@@ -4,10 +4,10 @@ use warnings;
 
 package App::Addex::AddressBook::Apple;
 {
-  $App::Addex::AddressBook::Apple::VERSION = '0.017';
+  $App::Addex::AddressBook::Apple::VERSION = '0.018';
 }
 use base qw(App::Addex::AddressBook);
-# ABSTRACT: use Apple Address Book as the addex source
+# ABSTRACT: use Apple Address Book as the addex source (doomed)
 
 use App::Addex::Entry::EmailAddress;
 use Encode ();
@@ -114,11 +114,11 @@ __END__
 
 =head1 NAME
 
-App::Addex::AddressBook::Apple - use Apple Address Book as the addex source
+App::Addex::AddressBook::Apple - use Apple Address Book as the addex source (doomed)
 
 =head1 VERSION
 
-version 0.017
+version 0.018
 
 =head1 SYNOPSIS
 
